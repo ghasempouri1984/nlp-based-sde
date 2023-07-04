@@ -7,9 +7,8 @@ import pandas as pd
 
 # nlp pkgs
 import spacy
-import en_core_web_sm
-nlp = en_core_web_sm.load()
-#nlp = spacy.load('en_core_web_sm')
+
+nlp = spacy.load('en_core_web_sm')
 from spacy import displacy
 # text cleaning pkgs
 import neattext as nt
