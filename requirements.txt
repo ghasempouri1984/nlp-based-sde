@@ -8,7 +8,6 @@ textblob==0.15.3
 nltk==3.6.3
 seaborn==0.11.2
 folium==0.12.1
-streamlit-folium==0.3.1
 datefinder==0.7.1
 gensim==4.1.2
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.1.0/en_core_web_sm-3.1.0.tar.gz
