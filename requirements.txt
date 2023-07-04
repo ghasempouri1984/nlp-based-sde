@@ -1,0 +1,11 @@
+pandas
+spacy
+wordcloud
+seaborn
+nltk
+folium
+gensim
+neattext
+matplotlib
+base64
+datefinder
