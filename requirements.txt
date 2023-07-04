@@ -7,5 +7,4 @@ folium
 gensim
 neattext
 matplotlib
-base64
 datefinder
