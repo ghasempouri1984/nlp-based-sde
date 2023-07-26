@@ -10,6 +10,8 @@ import spacy
 
 nlp = spacy.load('en_core_web_sm')
 from spacy import displacy
+from bs4 import BeautifulSoup
+
 # text cleaning pkgs
 import neattext as nt
 import neattext.functions as nfx
@@ -40,6 +42,11 @@ import gensim
 from gensim import corpora
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+
+from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.dom.minidom import parseString
+
+import re
 
 
 
@@ -228,6 +235,69 @@ def get_lda_topics(texts, num_topics=5, passes=20):
     lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics, passes=passes)
     return lda_model.print_topics()
 
+def remove_initial_numbers(text):
+    # The regex pattern to match any sequence of {number} at the beginning of a string
+    pattern = r"^\{\d+\}"
+    
+    # Split the text into paragraphs
+    paragraphs = text.split("\n")
+
+    # Remove the {number} sequence at the beginning of each paragraph
+    cleaned_paragraphs = [re.sub(pattern, '', paragraph).lstrip() for paragraph in paragraphs]
+
+    # Join the cleaned paragraphs back together
+    cleaned_text = "\n".join(cleaned_paragraphs)
+
+    # Remove bracketed numbers [number]
+    cleaned_text = re.sub(r"\[\d+\]", "", cleaned_text)
+    
+    return cleaned_text
+
+import xml.etree.ElementTree as ET
+
+def generate_tei_xml_v2(doc):
+    soup = BeautifulSoup(features='xml')
+
+    tei = soup.new_tag('TEI')
+    soup.append(tei)
+
+    text = soup.new_tag('text')
+    tei.append(text)
+
+    body = soup.new_tag('body')
+    text.append(body)
+
+    div = soup.new_tag('div')
+    body.append(div)
+
+    p = None
+
+    for sent in doc.sents:
+        if not p:
+            p = soup.new_tag('p')
+        for token in sent:
+            if token.ent_type_ == 'PERSON':
+                persName = soup.new_tag('persName')
+                persName.string = token.text
+                p.append(persName)
+            elif token.ent_type_ == 'DATE':
+                date = soup.new_tag('date')
+                date.string = token.text
+                p.append(date)
+            elif token.ent_type_ == 'GPE':
+                placeName = soup.new_tag('placeName')
+                placeName.string = token.text
+                p.append(placeName)
+            else:
+                p.append(' ')
+                p.append(token.text)
+        if len(p.contents) > 0:  # check if 'p' has any children
+            div.append(p)
+        p = None
+
+    tei_xml = str(soup)
+    return tei_xml
+
 def main():
     st.title("NLP-Based Scholarly Digital Edition of Letters")
     menu = ["Run The Tool", "About The Project", "Documentation"]
@@ -268,6 +338,32 @@ def main():
 
                     entity_result = render_entitis(raw_text)
                     stc.html(entity_result, height=1000, scrolling=True)
+
+                with st.expander('Generate TEI XML'):
+                    #first try
+                    #tei_xml = generate_tei_xml(raw_text)
+                    #st.text(tei_xml)
+                    
+                    #second try
+                    #doc = nlp(raw_text)
+                    #tei_xml = generate_tei_xml_v2(doc)
+                    #st.text(tei_xml)
+                    # Preprocess the raw text
+                    cleaned_text = remove_initial_numbers(raw_text)
+                    doc = nlp(cleaned_text)
+                    tei_xml = generate_tei_xml_v2(doc)
+                    
+                    # Convert BeautifulSoup object to a string
+                    tei_xml_str = str(tei_xml)
+
+                    # Create a download button for the TEI XML
+                    st.download_button(
+                        label="Download TEI XML",
+                        data=tei_xml_str,
+                        file_name="tei.xml",
+                        mime="application/xml",
+                    )
+
 
                 # Layouts
                 col1,col2 = st.columns(2)
