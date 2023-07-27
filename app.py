@@ -438,6 +438,7 @@ def main():
 
         - **Text Analysis:** Tokenize and analyze text, showing tokens, their shapes, parts of speech, tags, lemmas, and stopword status.
         - **Named Entity Recognition:** Extract and visualize entities such as names, dates, and organizations from the input text.
+        - **TEI XML Generation:** Takes a document as a sequence of tokens as input and generates a downloadable Text Encoding Initiative (TEI) compliant XML document.
         - **Sentiment Analysis:** Determine the sentiment of the input text, classifying it as positive, negative, or neutral.
         - **Word Cloud Generation:** Create word clouds to visualize the most common words in the input text.
         - **Frequency Plots:** Generate bar plots to visualize the frequency of the most common tokens in the input text.
@@ -499,6 +500,7 @@ def main():
         - **text_analyzer(my_text):** This function takes a text as input and performs analysis on it using spaCy. It extracts various attributes for each token in the text, such as token shape, part-of-speech tag, lemma, and whether it is alphabetic or a stopword. The function returns the analysis results as a pandas DataFrame.
         - **get_entities(my_text):** This function takes a text as input and uses spaCy to extract named entities from the text. It returns a list of tuples, where each tuple contains the text of the entity and its label.
         - **render_entitis(rawtext):** This function takes raw text as input and uses spaCy's displacy module to visualize the named entities in the text. It returns an HTML string containing the rendered visualization.
+        - **generate_tei_xml_v2(doc):** Takes a 'spaCy' document as input and generates a Text Encoding Initiative (TEI) compliant XML document.
         - **plot_wordcloud(text):** This function generates a word cloud visualization from the given text using the WordCloud module from the wordcloud library. It removes stopwords and generates a word cloud based on the word frequencies in the text.
         - **extract_date(texts) and extract_date2(texts):** These functions extract dates from the given text using the datefinder library. The first function returns a single date, while the second function returns a list of dates.
         - **analyze_sentiment(letters) and analyze_sentiment1(documents):** These functions analyze the sentiment of each letter or document using the TextBlob library. They calculate the sentiment polarity (positive, negative, or neutral) and return a list of tuples containing the letter/document, date, and sentiment.
