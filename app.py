@@ -465,7 +465,7 @@ def main():
 
 
         ### What's the significance of applying geospatial prototyping in literary studies and digital humanities?
-        The use of geospatial prototyping in literary studies and digital humanities, can offer several benefits and opportunities for deeper analysis and understanding. This approach incorporates the use of digital tools to visually represent the geographical elements in a narrative or the wider landscape of literary works.[9] 
+        The use of geospatial prototyping in literary studies and digital humanities, can offer several benefits and opportunities for deeper analysis and understanding. This approach incorporates the use of digital tools to visually represent the geographical elements in a narrative or the wider landscape of literary works[9, 10]. 
         Here are some reasons why mapping literature and geospatial prototyping are beneficial:
 
         - **Spatial Understanding:** Geospatial mapping can offer readers and researchers a new dimension of understanding, illuminating the significance of place and space in a work. Many literary works, for example, reference specific geographic locations, or their narratives are deeply influenced by the characteristics of the environments in which they are set. Seeing these settings visually can greatly enhance our understanding of these aspects.
@@ -501,6 +501,7 @@ def main():
         7. Teaching Computational Methods to Humanities Students (https://www.semanticscholar.org/paper/Teaching-Computational-Methods-to-Humanities-%C3%96hman/068248315c50889b4ab56bbdd1f88f76785cc1c5)
         8. How to Build an NLP Machine Learning App-End to End (https://medium.com/geekculture/how-to-build-an-nlp-machine-learning-app-end-to-end-76404ea9f6e8)
         9. El Khatib, R., & Schaeben, M. (2020). Why Map Literature? Geospatial Prototyping for Literary Studies and Digital Humanities. Digital Studies/Le champ numérique, 10(1).
+        10. El Khatib, R., Wrisley, D. J., Elbassuoni, S., Jaber, M., & El Zini, J. (2019). Prototyping Across the Disciplines.
         """)
 
         
