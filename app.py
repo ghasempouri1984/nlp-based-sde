@@ -1,29 +1,42 @@
+# Streamlit is a powerful framework used for building machine learning and data science web applications
 import streamlit as st
+
+# This module provides components for Streamlit, useful for custom visualization, input widgets etc
 import streamlit.components.v1 as stc
 
-# additional pkgs
-# eda pkgs
+# Pandas is a popular library used for data manipulation and analysis
 import pandas as pd
 
-# nlp pkgs
+# spaCy is an open-source library for advanced Natural Language Processing (NLP) tasks
 import spacy
-
 nlp = spacy.load('en_core_web_sm')
+
+# displaCy is spaCy’s built-in visualizer for rendering parsed dependency trees
 from spacy import displacy
+
+# Beautiful Soup is a Python library for pulling data out of HTML and XML files
 from bs4 import BeautifulSoup
 
-# text cleaning pkgs
+# Neattext is a Python library for cleaning raw text data
 import neattext as nt
 import neattext.functions as nfx
 
+# WordCloud is used to create word cloud images
 from wordcloud import WordCloud
+
+# Matplotlib is a plotting library for creating static, animated, and interactive visualizations
 import matplotlib.pyplot as plt
 
+# TextBlob is a Python library for processing textual data, used for sentiment analysis etc
 from textblob import TextBlob
 
+# The collections module provides alternatives to built-in container data types (e.g. Python dictionaries, lists, sets, and tuples)
 from collections import Counter
+
+# Seaborn is a Python data visualization library based on Matplotlib, used for drawing attractive statistical graphics
 import seaborn as sns
 
+# NLTK is a leading platform for building Python programs to work with human language data
 import nltk
 from nltk.corpus import stopwords
 nltk.download('stopwords')
@@ -31,26 +44,34 @@ nltk.download('omw-1.4')
 nltk.download('punkt')
 nltk.download('wordnet')
 
+# base64 is used for encoding binary data to ASCII characters and decoding such encodings back to binary data
 import base64
 
+# Folium is a powerful Python library used for creating several types of Leaflet maps
 import folium
 from streamlit_folium import folium_static
 
+# datefinder is a python module for locating dates inside text
 import datefinder
 
+# Gensim is an open-source library for unsupervised topic modeling and natural language processing
 import gensim
 from gensim import corpora
+
+# NLTK modules for text tokenization and lemmatization
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
+# xml.etree.ElementTree module implements a simple and efficient API for parsing and creating XML data
 from xml.etree.ElementTree import Element, SubElement, tostring
 from xml.dom.minidom import parseString
+import xml.etree.ElementTree as ET
 
+# The re module provides regular expression matching operations similar to those found in Perl
 import re
 
 
-
-# funcs
+# functions
 def text_analyzer(my_text):
     docx = nlp(my_text)
     allData = [(token.text, token.shape_,token.pos_,token.tag_,token.lemma_,token.is_alpha,token.is_stop) for token in docx]
@@ -252,8 +273,6 @@ def remove_initial_numbers(text):
     cleaned_text = re.sub(r"\[\d+\]", "", cleaned_text)
     
     return cleaned_text
-
-import xml.etree.ElementTree as ET
 
 def generate_tei_xml_v2(doc):
     soup = BeautifulSoup(features='xml')
