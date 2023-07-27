@@ -464,6 +464,23 @@ def main():
         - **Inclusion of Scholarly Input:** The NLP analysis should be complemented with scholarly input to provide context and interpretation. This could involve annotating the text with additional information or providing essays that discuss the findings of the NLP analysis [2].
 
 
+        ### What's the significance of applying geospatial prototyping in literary studies and digital humanities?
+        The use of geospatial prototyping in literary studies and digital humanities, can offer several benefits and opportunities for deeper analysis and understanding. This approach incorporates the use of digital tools to visually represent the geographical elements in a narrative or the wider landscape of literary works.[9] 
+        Here are some reasons why mapping literature and geospatial prototyping are beneficial:
+
+            - **Spatial Understanding:** Geospatial mapping can offer readers and researchers a new dimension of understanding, illuminating the significance of place and space in a work. Many literary works, for example, reference specific geographic locations, or their narratives are deeply influenced by the characteristics of the environments in which they are set. Seeing these settings visually can greatly enhance our understanding of these aspects.
+
+            - **Contextualization:** Mapping can also provide additional context by linking narratives to their real-world locations. This could help to enrich a reader's understanding of historical, cultural, or socio-political contexts that influence the narrative.
+
+            - **Comparative Analysis:** Geospatial prototyping can facilitate comparative studies of different works by the same author, or different authors writing about the same place. Seeing these works in a geographical context can shed light on thematic similarities and differences.
+
+            - **Pattern Recognition:** A visual representation can help identify patterns that might be less apparent when reading the text. This might include recurring themes related to specific locations, trends in the movement of characters, or the evolution of a place over time as depicted in a series of works.
+
+            - **Accessibility and Engagement:** Interactive maps can make literature more accessible and engaging, especially for audiences that might be less familiar with the geographic context of a work. It can also offer innovative ways for teaching literature.
+
+            - **Interdisciplinary Research:** Finally, mapping literature can facilitate interdisciplinary research, bridging the gap between humanities and disciplines such as geography, urban studies, and sociology. This allows for richer and more diverse perspectives in studying literature.
+
+
         ### Which technologies best achieve the expected results?
         The app is built using the following Python libraries:
 
@@ -488,7 +505,7 @@ def main():
         6. Reflexivity in Issues of Scale and Representation in a Digital Humanities Project (https://arxiv.org/abs/2109.14184)
         7. Teaching Computational Methods to Humanities Students (https://www.semanticscholar.org/paper/Teaching-Computational-Methods-to-Humanities-%C3%96hman/068248315c50889b4ab56bbdd1f88f76785cc1c5)
         8. How to Build an NLP Machine Learning App-End to End (https://medium.com/geekculture/how-to-build-an-nlp-machine-learning-app-end-to-end-76404ea9f6e8)
-
+        9. El Khatib, R., & Schaeben, M. (2020). Why Map Literature? Geospatial Prototyping for Literary Studies and Digital Humanities. Digital Studies/Le champ numérique, 10(1).
         """)
 
         
