@@ -325,7 +325,7 @@ def main():
                 st.session_state.letters.append(raw_text)  # Add the current letter to the session state
                 letters = st.session_state.letters
                 with st.expander('Original Text'):
-                    st.write(raw_text)
+                    st.write('')
                 
                 with st.expander('Text Analysis'):
                     token_result_df = text_analyzer(raw_text)
