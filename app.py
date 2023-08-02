@@ -93,12 +93,8 @@ def render_entitis(rawtext):
     return result
 
 def plot_wordcloud(text):
-    #wordcloud = WordCloud(width=800, height=400, background_color='white', colormap='viridis').generate(text)
-    #plt.imshow(wordcloud, interpolation='bilinear')
-    #plt.axis('off')
-    #plt.show()
+
     wordcloud = WordCloud(stopwords=set(stopwords.words('english')), max_words=100, background_color='white').generate(text)
-    #wordcloud = WordCloud(stopwords=nfx.ENGLISH_STOP_WORDS, max_font_size=50, max_words=100, background_color="white").generate(text)
     plt.figure()
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
@@ -143,7 +139,6 @@ def analyze_sentiment1(documents):
 
     blob = TextBlob(documents)
     sentiment_polarity = blob.sentiment.polarity
-    #sentiment_subjectivity = blob.sentiment.subjectivity
 
     if sentiment_polarity > 0:
         sentiment = "Positive"
@@ -152,8 +147,6 @@ def analyze_sentiment1(documents):
     else:
         sentiment = "Neutral"
 
-    #return sentiment, sentiment_polarity, sentiment_subjectivity
-    #sentiment = TextBlob(documents).sentiment.polarity
     sentiment_data.append((documents, date, sentiment))
     
     return sentiment_data
@@ -274,11 +267,38 @@ def remove_initial_numbers(text):
     
     return cleaned_text
 
-def generate_tei_xml_v2(doc):
+def generate_tei_xml_v2(doc, title, publication_info, source_info):
     soup = BeautifulSoup(features='xml')
 
-    tei = soup.new_tag('TEI')
+    tei = soup.new_tag('TEI', xmlns="http://www.tei-c.org/ns/1.0")
     soup.append(tei)
+
+    teiHeader = soup.new_tag('teiHeader')
+    tei.append(teiHeader)
+
+    fileDesc = soup.new_tag('fileDesc')
+    teiHeader.append(fileDesc)
+
+    titleStmt = soup.new_tag('titleStmt')
+    fileDesc.append(titleStmt)
+
+    title_tag = soup.new_tag('title')
+    title_tag.string = title
+    titleStmt.append(title_tag)
+
+    publicationStmt = soup.new_tag('publicationStmt')
+    fileDesc.append(publicationStmt)
+
+    p_pub = soup.new_tag('p')
+    p_pub.string = publication_info
+    publicationStmt.append(p_pub)
+
+    sourceDesc = soup.new_tag('sourceDesc')
+    fileDesc.append(sourceDesc)
+
+    p_source = soup.new_tag('p')
+    p_source.string = source_info
+    sourceDesc.append(p_source)
 
     text = soup.new_tag('text')
     tei.append(text)
@@ -315,7 +335,122 @@ def generate_tei_xml_v2(doc):
         p = None
 
     tei_xml = str(soup)
+    #tei_xml = soup.prettify()
+    
+    # Remove the auto-generated XML declaration
+    tei_xml = tei_xml.replace('<?xml version="1.0" encoding="utf-8"?>', '', 1)
+
+
+    # Add the XML declaration and xml-model processing instructions manually to the final string
+    tei_xml = '<?xml version="1.0" encoding="UTF-8"?>\n' \
+                '<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>\n' \
+                '<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>\n' \
+               + tei_xml
+
     return tei_xml
+
+def generate_song_tei_xml(song_text, title, publication_info, source_info):
+    soup = BeautifulSoup(features='xml')
+
+    # Add the TEI root element
+    tei = soup.new_tag('TEI', xmlns="http://www.tei-c.org/ns/1.0")
+    soup.append(tei)
+
+    # Add the teiHeader with metadata about the song
+    teiHeader = soup.new_tag('teiHeader')
+    tei.append(teiHeader)
+
+    fileDesc = soup.new_tag('fileDesc')
+    teiHeader.append(fileDesc)
+
+    titleStmt = soup.new_tag('titleStmt')
+    fileDesc.append(titleStmt)
+
+    title_tag = soup.new_tag('title')
+    title_tag.string = title
+    titleStmt.append(title_tag)
+
+    publicationStmt = soup.new_tag('publicationStmt')
+    fileDesc.append(publicationStmt)
+
+    p_pub = soup.new_tag('p')
+    p_pub.string = publication_info
+    publicationStmt.append(p_pub)
+
+    sourceDesc = soup.new_tag('sourceDesc')
+    fileDesc.append(sourceDesc)
+
+    p_source = soup.new_tag('p')
+    p_source.string = source_info
+    sourceDesc.append(p_source)
+
+    # Add the text, body, and div elements
+    text = soup.new_tag('text')
+    tei.append(text)
+
+    body = soup.new_tag('body')
+    text.append(body)
+
+    div = soup.new_tag('div')
+    body.append(div)
+
+    # Split the song into lines
+    lines = song_text.split('\n')
+
+    # Initialize a counter for the verses
+    verse_counter = 0
+
+    # Initialize an empty line group
+    lg = None
+
+    # Process each line
+    for line in lines:
+        # If the line starts with '[', it's a part label
+        if line.startswith('['):
+            # If we have a line group, add it to the div
+            if lg is not None:
+                div.append(lg)
+
+            # Get the part type and create a new line group
+            #part_type = line.strip('[]').lower()
+            part_type = line.strip('[]').lower().replace(' ', '_')  # Replace spaces with underscores
+            if part_type.startswith('verse'):
+                verse_counter += 1
+                lg = soup.new_tag('lg', type=part_type, n=verse_counter)
+            elif part_type.startswith('chorus'):
+                lg = soup.new_tag('lg', type=part_type)
+            elif part_type.endswith('solo'):
+                lg = soup.new_tag('stage', type='solo')
+                lg.string = line
+                div.append(lg)
+                lg = None
+        # If the line is not empty, it's a line of the song
+        elif line != '':
+            l = soup.new_tag('l')
+            l.string = line
+            if lg is not None:
+                lg.append(l)
+
+    # If we have a line group, add it to the div
+    if lg is not None:
+        div.append(lg)
+
+    # Convert BeautifulSoup object to a string
+    tei_xml_str = str(soup)
+
+    # Remove the auto-generated XML declaration
+    tei_xml_str = tei_xml_str.replace('<?xml version="1.0" encoding="utf-8"?>', '', 1)
+
+    # Add the XML declaration and xml-model processing instructions manually to the final string
+    tei_xml_str = '<?xml version="1.0" encoding="UTF-8"?>\n' \
+                '<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>\n' \
+                '<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>\n' \
+               + tei_xml_str
+
+    #return tei_xml_str
+
+    return soup
+
 
 def main():
     st.title("NLP-Based Scholarly Digital Edition of Letters")
@@ -327,6 +462,12 @@ def main():
 
     if choice == "Run The Tool":
         st.subheader("Analyze Text:")
+
+        # Add TEI metadata input widgets
+        title = st.sidebar.text_input("Document Title")
+        publication_info = st.sidebar.text_input("Publication Information")
+        source_info = st.sidebar.text_input("Source Information")
+
          # Add file uploader and text area widgets
         uploaded_file = st.file_uploader("Upload a text file", type=["txt"])
         raw_text = st.text_area("Enter Text Here")
@@ -334,7 +475,7 @@ def main():
         # Handle uploaded file content
         if uploaded_file is not None:
             raw_text = uploaded_file.read().decode("utf-8")
-        #raw_text = st.text_area("Enter Text Here")
+
         num_of_most_common = st.sidebar.number_input("Most Common Tokens", 5, 15)
         if st.button("Analyze"):
             if raw_text.strip() == "":
@@ -352,28 +493,17 @@ def main():
                     #st.write(raw_text)
                 
                 with st.expander('Entities'):
-                    #entity_result = get_entities(raw_text)
-                    #  st.write(entity_result)
-
                     entity_result = render_entitis(raw_text)
                     stc.html(entity_result, height=1000, scrolling=True)
 
                 with st.expander('Generate TEI XML'):
-                    #first try
-                    #tei_xml = generate_tei_xml(raw_text)
-                    #st.text(tei_xml)
-                    
-                    #second try
-                    #doc = nlp(raw_text)
-                    #tei_xml = generate_tei_xml_v2(doc)
-                    #st.text(tei_xml)
                     # Preprocess the raw text
                     cleaned_text = remove_initial_numbers(raw_text)
                     doc = nlp(cleaned_text)
-                    tei_xml = generate_tei_xml_v2(doc)
-                    
+                    tei_xml =generate_tei_xml_v2(doc, title, publication_info, source_info)   #generate_tei_xml_v2(doc)
+                    tei_xml_str = tei_xml
                     # Convert BeautifulSoup object to a string
-                    tei_xml_str = str(tei_xml)
+                    #tei_xml_str = str(tei_xml)
 
                     # Create a download button for the TEI XML
                     st.download_button(
@@ -382,7 +512,29 @@ def main():
                         file_name="tei.xml",
                         mime="application/xml",
                     )
+                
+                with st.expander('Generate Song TEI XML'):
+                    
+                    tei_xml=generate_song_tei_xml(raw_text, title, publication_info, source_info)
+                    #tei_xml_str_song=tei_xml
+                    tei_xml_str_song = tei_xml.prettify()
+                    tei_xml_str_song = str(tei_xml_str_song)
 
+                    # Remove the auto-generated XML declaration
+                    tei_xml_str_song = tei_xml_str_song.replace('<?xml version="1.0" encoding="utf-8"?>', '', 1)
+
+                    # Add the XML declaration and xml-model processing instructions manually to the final string
+                    tei_xml_str_song = '<?xml version="1.0" encoding="UTF-8"?>\n' \
+                            '<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>\n' \
+                            '<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>\n' \
+                            + tei_xml_str_song
+
+                    st.download_button(
+                        label="Download Song TEI XML",
+                        data=tei_xml_str_song,
+                        file_name="teisong.xml",
+                        mime="application/xml",
+                    )
 
                 # Layouts
                 col1,col2 = st.columns(2)
@@ -410,8 +562,7 @@ def main():
 
                         st.write(sentiment_df)
                         st.write(temporal_spatial_df)
-
-                                           
+            
                 
                 with col2:
                     with st.expander("Plot Word Freq"):
@@ -428,9 +579,7 @@ def main():
                         st.pyplot(plot_wordcloud(cleaned_text))
 
                 with st.expander("Topic Modeling"):
-                    
-                    #num_topics = st.slider("Number of Topics", 2, 10, 5)
-                    #num_passes = st.slider("Number of Passes", 10, 50, 20)
+                                        
                     num_topics = 3
                     num_passes = 3
                     lda_topics = get_lda_topics([raw_text], num_topics=num_topics, passes=num_passes)
@@ -445,9 +594,7 @@ def main():
                     download_link = f'<a href="data:file/csv;base64,{b64}" download="{download_filename}">Download CSV File</a>'
                     st.markdown(download_link, unsafe_allow_html=True)
             
-    
-    #elif choice == "NLP(files)":
-    #    st.subheader("NLP Task")
+        
     elif choice == "About The Project":
         st.subheader("About The Project")
         st.markdown("""
@@ -507,6 +654,10 @@ def main():
         - **matplotlib, seaborn:** Libraries for creating static, animated, and interactive visualizations.
         - **pandas:** A library for data manipulation and analysis.
         - **folium:** A library for creating interactive maps.
+        - **xml.etree.ElementTree:** It implements a simple and efficient API for parsing and creating XML data.
+        - **datefinder:** A python module for locating dates inside text.
+        - **Gensim:** An open-source library for unsupervised topic modeling and natural language processing.
+        - **Seaborn:** A Python data visualization library based on Matplotlib, used for drawing attractive statistical graphics.
 
         You can find the complete source code for this app on [GitHub](https://github.com/ghasempouri1984/VespasianodaBisticci). Feel free to contribute or report any issues you find.
 
