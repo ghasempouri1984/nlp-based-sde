@@ -67,6 +67,8 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 from xml.dom.minidom import parseString
 import xml.etree.ElementTree as ET
 
+from lxml import etree
+
 # The re module provides regular expression matching operations similar to those found in Perl
 import re
 
@@ -452,6 +454,51 @@ def generate_song_tei_xml(song_text, title, publication_info, source_info):
     return soup
 
 
+def generate_poem_xml(poem_text, title_poem, introduction, author):
+    # Create the root element
+    root = etree.Element('book')
+
+    # Add the introduction
+    intro = etree.SubElement(root, 'introduction')
+    etree.SubElement(intro, 'para').text = introduction
+
+    # Add the body
+    body = etree.SubElement(root, 'body')
+
+    # Add the poem
+    poem = etree.SubElement(body, 'poem')
+
+    # Add the poem title
+    etree.SubElement(poem, 'title').text = title_poem
+
+    # Split the poem into stanzas
+    stanzas = poem_text.split('\n\n')
+
+    # Process each stanza
+    for stanza_text in stanzas:
+        stanza = etree.SubElement(poem, 'stanza')
+
+        # Split the stanza into lines
+        lines = stanza_text.split('\n')
+
+        # Process each line
+        for line_text in lines:
+            etree.SubElement(stanza, 'line').text = line_text
+
+    # Add the epilogue
+    epilogue = etree.SubElement(root, 'epilogue')
+    etree.SubElement(epilogue, 'para')
+    etree.SubElement(epilogue, 'signature').text = author
+
+    # Generate the XML string
+    xml_bytes = etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8', doctype='<!DOCTYPE book SYSTEM "poem.dtd">')
+
+    # Convert the bytes to a string
+    xml_str = xml_bytes.decode('UTF-8')
+
+    return xml_str
+
+
 def main():
     st.title("NLP-Based Scholarly Digital Edition of Letters")
     menu = ["Run The Tool", "About The Project", "Documentation"]
@@ -467,6 +514,11 @@ def main():
         title = st.sidebar.text_input("Document Title")
         publication_info = st.sidebar.text_input("Publication Information")
         source_info = st.sidebar.text_input("Source Information")
+
+        # Add Poem TEI metadata input widgets
+        title_poem = st.sidebar.text_input("Title")
+        introduction = st.sidebar.text_input("Introduction")
+        author = st.sidebar.text_input("Author")
 
          # Add file uploader and text area widgets
         uploaded_file = st.file_uploader("Upload a text file", type=["txt"])
@@ -535,6 +587,36 @@ def main():
                         file_name="teisong.xml",
                         mime="application/xml",
                     )
+                
+                with st.expander('Generate Poem XML'):
+                    poem_xml = generate_poem_xml(raw_text, title_poem, introduction, author)
+                    st.download_button(
+                        label="Download Poem XML",
+                        data=poem_xml,
+                        file_name="poem.xml",
+                        mime="application/xml",
+                    )
+
+                     # DTD string
+                    dtd_str = '''<!ELEMENT book (introduction, body, epilogue)>
+                    <!ELEMENT introduction (para)>
+                    <!ELEMENT para (#PCDATA)>
+                    <!ELEMENT body (poem)>
+                    <!ELEMENT poem (title, stanza+)>
+                    <!ELEMENT title (#PCDATA)>
+                    <!ELEMENT stanza (line+)>
+                    <!ELEMENT line (#PCDATA)>
+                    <!ELEMENT epilogue (para?, signature)>
+                    <!ELEMENT signature (#PCDATA)>'''
+
+                    # Download button for the DTD file
+                    st.download_button(
+                        label="Download Poem DTD",
+                        data=dtd_str,
+                        file_name="poem.dtd",
+                        mime="application/xml-dtd",
+                    )
+
 
                 # Layouts
                 col1,col2 = st.columns(2)
